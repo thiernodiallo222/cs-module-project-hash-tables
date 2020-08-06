@@ -6,7 +6,7 @@ class HashTableEntry:
         self.key = key
         self.value = value
         self.next = None
-        # this is a comment
+      
 
 
 # Hash table can't have fewer than this many slots
@@ -22,6 +22,9 @@ class HashTable:
     """
 
     def __init__(self, capacity):
+        this.capacity = capacity
+        this.storage = 0
+        this.array =[None]* MIN_CAPACITY
         # Your code here
 
 
@@ -36,6 +39,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return this.capacity
 
 
     def get_load_factor(self):
@@ -44,6 +48,7 @@ class HashTable:
 
         Implement this.
         """
+        return this.storage/this.get_num_slots()
         # Your code here
 
 
@@ -82,6 +87,9 @@ class HashTable:
 
         Implement this.
         """
+        HashTableEntry(key, value)
+        this.storage += 1
+       
         # Your code here
 
 
@@ -93,6 +101,7 @@ class HashTable:
 
         Implement this.
         """
+        HashTableEntry(key, value)
         # Your code here
 
 
