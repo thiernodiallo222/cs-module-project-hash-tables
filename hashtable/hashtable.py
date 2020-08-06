@@ -24,7 +24,7 @@ class HashTable:
     def __init__(self, capacity):
         this.capacity = capacity
         this.size = 0
-        this.storage =[None]*this.capacity 
+        this.storage =[None]*MIN_CAPACITY 
         # Your code here
 
 
@@ -68,7 +68,7 @@ class HashTable:
 
         Implement this, and/or FNV-1.
         """
-        hash = 5381
+        hash =1987
         for element in key:
             hash = (( hash << 5) + hash) + ord(x)
         return hash & 0xFFFFFFFF
