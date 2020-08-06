@@ -23,8 +23,8 @@ class HashTable:
 
     def __init__(self, capacity):
         this.capacity = capacity
-        this.storage = 0
-        this.array =[None]* MIN_CAPACITY
+        this.size = 0
+        this.storage =[None]*this.capacity 
         # Your code here
 
 
@@ -39,7 +39,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        return this.capacity
+        return len(this.capacity)
 
 
     def get_load_factor(self):
@@ -48,7 +48,7 @@ class HashTable:
 
         Implement this.
         """
-        return this.storage/this.get_num_slots()
+        return this.size/this.capacity
         # Your code here
 
 
@@ -87,9 +87,10 @@ class HashTable:
 
         Implement this.
         """
-        HashTableEntry(key, value)
-        this.storage += 1
-       
+        this.size+=2
+        data = HashTableEntry(key, value)
+        index = dbj2(key)
+        this.storage.insert(index, value)
         # Your code here
 
 
@@ -101,7 +102,9 @@ class HashTable:
 
         Implement this.
         """
-        HashTableEntry(key, value)
+        this.size-=1
+        index = dbj2(key)
+        this.storage.pop(index)
         # Your code here
 
 
@@ -113,6 +116,8 @@ class HashTable:
 
         Implement this.
         """
+        index = dbj2(key)
+        return this.storage[index]
         # Your code here
 
 
@@ -123,6 +128,7 @@ class HashTable:
 
         Implement this.
         """
+        if
         # Your code here
 
 
