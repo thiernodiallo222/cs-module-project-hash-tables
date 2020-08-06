@@ -14,7 +14,7 @@ Task: Implement a basic hash table without collision resolution.
    * FNV-1 (64-bit)
 
    You are allowed to Google for these hashing functions and implement
-   from psuedocode.
+   from pseudo-code.
 
 3. Implement the `hash_index()` that returns an index value for a key.
 

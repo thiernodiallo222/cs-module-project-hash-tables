@@ -6,6 +6,7 @@ class HashTableEntry:
         self.key = key
         self.value = value
         self.next = None
+        # this is a comment
 
 
 # Hash table can't have fewer than this many slots
