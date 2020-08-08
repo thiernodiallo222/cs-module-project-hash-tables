@@ -21,10 +21,10 @@ class HashTable:
     Implement this.
     """
 
-    def __init__(self, capacity):
-        this.capacity = capacity
-        this.size = 0
-        this.storage =[None]*MIN_CAPACITY 
+    def __init__(self, capacity=0):
+        self.capacity =capacity
+        self.size = 0
+        self.storage =[None]*self.capacity
         # Your code here
 
 
@@ -39,7 +39,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        return len(this.capacity)
+        return len(self.capacity)
 
 
     def get_load_factor(self):
@@ -48,7 +48,7 @@ class HashTable:
 
         Implement this.
         """
-        return this.size/this.capacity
+        return self.size/self.capacity
         # Your code here
 
 
@@ -68,9 +68,9 @@ class HashTable:
 
         Implement this, and/or FNV-1.
         """
-        hash =1987
+        hash =5381
         for element in key:
-            hash = (( hash << 5) + hash) + ord(x)
+            hash = (( hash << 5) + hash) + ord(element)
         return hash & 0xFFFFFFFF
         # Your code here
 
@@ -91,10 +91,25 @@ class HashTable:
 
         Implement this.
         """
-        this.size+=2
+        self.size+=1
         data = HashTableEntry(key, value)
-        index = dbj2(key)
-        this.storage.insert(index, value)
+        index = self.hash_index(key)
+        # go to the index of hashtable 
+        location = self.storage[index]
+        # check if location is empty
+        if location is None:
+            # then, put item there
+            self.storage[index] = data
+            # self.storage.insert(key, value);
+        # otherwise
+        else:
+            previous=location
+            while location is not None:
+                previous = location
+                location = location.next
+            previous.next = data
+            # previous.next=self.storage.insert(key, value)
+                
         # Your code here
 
 
@@ -106,9 +121,26 @@ class HashTable:
 
         Implement this.
         """
-        this.size-=1
-        index = dbj2(key)
-        this.storage.pop(index)
+        # increment the size
+        self.size -= 1
+        # find the index
+        index = self.hash_index(key)
+        # go to location
+        location = self.storage[index]
+        if location is not None:
+            if location.key == key:
+                self.storage.pop(index)
+            else:
+                previous=location
+                while location is not None:
+                    previous = location
+                    location = location.next
+                    if location.key == key:
+                        break
+                location.next.next
+                return 
+        print('Item with given key was not found')
+
         # Your code here
 
 
@@ -120,8 +152,29 @@ class HashTable:
 
         Implement this.
         """
-        index = dbj2(key)
-        return this.storage[index]
+        # find the index of key
+        index = self.hash_index(key)
+        # find the location 
+        location = self.storage[index]
+         # check if it is empty
+        if location is None:
+            # return None 
+            return None
+        else:
+            # check if location is the searched item
+            if location.key == key:
+                return location.value
+            else:
+                previous = location
+                    # iterate through the linked list 
+                    while location is not None:
+                        previous = location
+                        location = location.next
+                        if location.key == key:
+                            return location.key
+                    return None
+                    
+         
         # Your code here
 
 
