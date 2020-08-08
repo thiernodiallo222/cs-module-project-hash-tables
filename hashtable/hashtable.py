@@ -132,7 +132,6 @@ class HashTable:
 
         Implement this.
         """
-        if
         # Your code here
 
 
