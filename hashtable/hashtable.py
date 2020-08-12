@@ -6,7 +6,6 @@ class HashTableEntry:
         self.key = key
         self.value = value
         self.next = None
-      
 
 
 # Hash table can't have fewer than this many slots
@@ -21,12 +20,12 @@ class HashTable:
     Implement this.
     """
 
-    def __init__(self, capacity=0):
-        self.capacity =capacity
+    def __init__(self, capacity):
+        
+        self.capacity = capacity  # Number of buckets in the hash table
+        self.storage = [None] * capacity
         self.size = 0
-        self.storage =[None]*self.capacity
-        # Your code here
-
+    
 
     def get_num_slots(self):
         """
@@ -38,9 +37,9 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        
         return len(self.storage)
-
+    
 
     def get_load_factor(self):
         """
@@ -48,9 +47,9 @@ class HashTable:
 
         Implement this.
         """
-        return self.size/self.capacity
-        # Your code here
-
+        
+        return self.size / self.capacity
+    
 
     def fnv1(self, key):
         """
@@ -59,8 +58,23 @@ class HashTable:
         Implement this, and/or DJB2.
         """
 
-        # Your code here
+        
+        # 64-bit constants
+        FNV_offset_basis_64 = 0xcbf29ce484222325
+        FNV_prime_64 = 0x100000001b3
 
+        # Cast the key to a string and get bytes
+        str_key = str(key).encode()
+
+        hash = FNV_offset_basis_64
+
+        for b in str_key:
+            hash *= FNV_prime_64
+            hash ^= b
+            hash &= 0xffffffffffffffff  # 64-bit hash
+
+        return hash
+    
 
     def djb2(self, key):
         """
@@ -68,12 +82,20 @@ class HashTable:
 
         Implement this, and/or FNV-1.
         """
-        hash =5381
-        for element in key:
-            hash = (( hash << 5) + hash) + ord(element)
-        return hash & 0xFFFFFFFF
-        # Your code here
+        
+        # Cast the key to a string and get bytes
+        str_key = str(key).encode()
 
+        # Start from an arbitrary large prime
+        hash_value = 5381
+
+        # Bit-shift and sum value for each character
+        for b in str_key:
+            hash_value = ((hash_value << 5) + hash_value) + b
+            hash_value &= 0xffffffff  # DJB2 is a 32-bit hash, only keep 32 bits
+
+        return hash_value
+    
 
     def hash_index(self, key):
         """
@@ -91,32 +113,29 @@ class HashTable:
 
         Implement this.
         """
-        if self.get_load_factor() > 0.7:
-            self.resize(self.capacity*2)
-        self.size+=1
-        data = HashTableEntry(key, value)
+        
         index = self.hash_index(key)
-        # go to the index of hashtable 
-        location = self.storage[index]
-        # check if location is empty
-        if location is None:
-            # then, put item there
-            self.storage[index] = data
-            # self.storage.insert(key, value);
-        # otherwise
-        else:
-            if location.key == key:
-                self.storage[index] = data
-                return
-            else:
-                previous=location
-                while location is not None:
-                     previous = location
-                     location = location.next
-                previous.next = data
-                
-        # Your code here
 
+        location = self.storage[index]
+
+        #if location is not None and location.key != key:
+        #    print(f"collision ({key}<>{location.key})")
+
+        while location is not None and location.key != key:
+            location = location.next
+
+        if location is not None:
+            location.value = value
+        else:
+            new_entry = HashTableEntry(key, value)
+            new_entry.next = self.storage[index]
+            self.storage[index] = new_entry
+
+            # Auto resize if load factor too high
+            self.size += 1
+            if self.get_load_factor() > 0.7:
+                self.resize(self.capacity * 2)
+    
 
     def delete(self, key):
         """
@@ -126,32 +145,34 @@ class HashTable:
 
         Implement this.
         """
-        # decrement the size
-        self.size -= 1
-        # find the index
-        index = self.hash_index(key)
-        # go to location
-        location = self.storage[index]
-        if location is None:
-            return None
-        else:
-            if location.next is None:
-                if location.key == key:
-                    location = None
-                else:
-                    previous=location
-                    while location is not None:
-                        previous = location   
-                        location = location.next
-                        if(location.key == key):
-                            previous.next = location.next
-                            location.next=None
-                            break
-                return None
         
-       
+        index = self.hash_index(key)
 
+        location = self.storage[index]
+        last_entry = None
 
+        while location is not None and location.key != key:
+            last_entry = location
+            location = last_entry.next
+
+        if location is None:
+            print("ERROR: Unable to remove entry with key " + key)
+        else:
+            if last_entry is None:  # Removing the first element in the LL
+                self.storage[index] = location.next
+            else:
+                last_entry.next = location.next
+
+            # Auto resize if load factor too low
+            self.size -= 1
+            if self.get_load_factor() < 0.2:
+                if self.capacity > MIN_CAPACITY:
+                    new_capacity = self.capacity // 2
+                    if new_capacity < MIN_CAPACITY:
+                        new_capacity = MIN_CAPACITY
+
+                    self.resize(new_capacity)
+    
 
     def get(self, key):
         """
@@ -161,33 +182,16 @@ class HashTable:
 
         Implement this.
         """
-        # find the index of key
+        
         index = self.hash_index(key)
-        # find the location 
-        location = self.storage[index]
-         # check if it is empty
-        if location is None:
-            # return None 
-            return None
-        else:
-            # check if location is the searched item
-            if location.key == key:
-                return location.value
-            else:
-                # iterate through the linked list 
-                while location is not None:
-                    if location.key == key:
-                        return location.value
-                        break
-                    # previous = location
-                    location = location.next
-                    
-                    
-                return None
-                    
-         
-        # Your code here
 
+        location = self.storage[index]
+
+        while location is not None:
+            if(location.key == key):
+                return location.value
+            location = location.next
+    
 
     def resize(self, new_capacity):
         """
@@ -196,22 +200,27 @@ class HashTable:
 
         Implement this.
         """
-        # doubled = [None] * len(self.storage) * 2
-        self.capacity = new_capacity
-        copy=self.storage
-        self.storage = [None] * self.capacity
-        for i in range(0, len(copy)):
-            if (copy[i] is not None):
-                while (copy[i]) is not None:
-                    self.put(copy[i].key,copy[i].value)
-                    copy[i] = copy[i].next
-                    
-
-
-
         
-        # Your code here
+        old_storage = self.storage
+        self.capacity = new_capacity
+        self.storage = [None] * self.capacity
 
+        location = None
+
+        # Save this because put adds to it, and we don't want it to.
+        # It might be less hackish to pass a flag to put indicating that
+        # we're in a resize and don't want to modify item count.
+        old_item_count = self.size
+
+        for bucket_item in old_storage:
+            location = bucket_item
+            while location is not None:
+                self.put(location.key, location.value)
+                location = location.next
+
+        # Restore this to the correct number
+        self.size = old_item_count
+    
 
 
 if __name__ == "__main__":

@@ -14,6 +14,9 @@ def slowfun(x, y):
     Rewrite slowfun_too_slow() in here so that the program produces the same
     output, but completes quickly instead of taking ages to run.
     """
+    def build_table(){
+        for i in range
+    }
     # Your code here
 
 
