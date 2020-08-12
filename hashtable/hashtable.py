@@ -39,7 +39,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        return len(self.capacity)
+        return len(self.storage)
 
 
     def get_load_factor(self):
@@ -91,6 +91,8 @@ class HashTable:
 
         Implement this.
         """
+        if self.get_load_factor() > 0.7:
+            self.resize(self.capacity*2)
         self.size+=1
         data = HashTableEntry(key, value)
         index = self.hash_index(key)
@@ -103,12 +105,15 @@ class HashTable:
             # self.storage.insert(key, value);
         # otherwise
         else:
-            previous=location
-            while location is not None:
-                previous = location
-                location = location.next
-            previous.next = data
-            # previous.next=self.storage.insert(key, value)
+            if location.key == key:
+                self.storage[index] = data
+                return
+            else:
+                previous=location
+                while location is not None:
+                     previous = location
+                     location = location.next
+                previous.next = data
                 
         # Your code here
 
@@ -121,27 +126,31 @@ class HashTable:
 
         Implement this.
         """
-        # increment the size
+        # decrement the size
         self.size -= 1
         # find the index
         index = self.hash_index(key)
         # go to location
         location = self.storage[index]
-        if location is not None:
-            if location.key == key:
-                self.storage.pop(index)
-            else:
-                previous=location
-                while location is not None:
-                    previous = location
-                    location = location.next
-                    if location.key == key:
-                        break
-                location.next.next
-                return 
-        print('Item with given key was not found')
+        if location is None:
+            return None
+        else:
+            if location.next is None:
+                if location.key == key:
+                    location = None
+                else:
+                    previous=location
+                    while location is not None:
+                        previous = location   
+                        location = location.next
+                        if(location.key == key):
+                            previous.next = location.next
+                            location.next=None
+                            break
+                return None
+        
+       
 
-        # Your code here
 
 
     def get(self, key):
@@ -165,14 +174,16 @@ class HashTable:
             if location.key == key:
                 return location.value
             else:
-                previous = location
-                    # iterate through the linked list 
-                    while location is not None:
-                        previous = location
-                        location = location.next
-                        if location.key == key:
-                            return location.key
-                    return None
+                # iterate through the linked list 
+                while location is not None:
+                    if location.key == key:
+                        return location.value
+                        break
+                    # previous = location
+                    location = location.next
+                    
+                    
+                return None
                     
          
         # Your code here
@@ -185,6 +196,20 @@ class HashTable:
 
         Implement this.
         """
+        # doubled = [None] * len(self.storage) * 2
+        self.capacity = new_capacity
+        copy=self.storage
+        self.storage = [None] * self.capacity
+        for i in range(0, len(copy)):
+            if (copy[i] is not None):
+                while (copy[i]) is not None:
+                    self.put(copy[i].key,copy[i].value)
+                    copy[i] = copy[i].next
+                    
+
+
+
+        
         # Your code here
 
 
